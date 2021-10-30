@@ -1,0 +1,47 @@
+pip install librosa soundfile numpy sklearn pyaudio
+import librosa
+import soundfile
+import os,glob,pickle
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import accuracy_score
+def extract_feature(hackathon,mfcc,chroma,mel):
+    with soundfile.SoundFile(hackathon) as sound_file:
+        x=sound_file.read(dtype="float32")
+        sample_rate=sound_file.samplerate
+        if chroma:
+            stft=np.abs(librosa.stft(x))
+        result=np.array([])
+        if mfcc:
+            mfccs=np.mean(librosa.feature.mfcc(y=x, sr=sample_rate,n_mfcc=40).T,axis=0) 
+            result=np.hstack((result,mfcss))
+        if chroma:
+            chroma=np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T,axis=0)
+            result=np.hstack((result,chroma))
+        if mel:
+            mel=np.mean(librosa.feature.mfcc(x, sr=sample_rate).T,axis=0)
+            result=np.hstack((result,mel))
+        return result
+
+!echo $PYTHONPATH
+import sys
+import os
+import glob
+emotions={
+    '01':'not stressed',#neutral  
+    '02':'not stressed',#calm
+    '03':'not stressed',#happy
+    '04':'stressed',#sad
+    '05':'stressed',#angry
+    '06':'stressed',#fearful
+    '07':'stressed',#disgust
+    '08':'not stressed'#suprised
+         }
+from google.colab import drive
+drive.mount("/content/drive")
+for file in glob.glob("/content/drive/MyDrive/hackathon/Actor_*/*.wav"):
+    print(file)
+    soundfile=os.path.basename(file)
+    emotion=emotions[soundfile.split("-")[2]]
+    print(emotion)
